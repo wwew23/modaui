@@ -6,6 +6,7 @@ use Botble\AiMultiIndustry\Http\Controllers\AiChatController;
 use Botble\AiMultiIndustry\Http\Controllers\Admin\IndustryController;
 use Botble\AiMultiIndustry\Http\Controllers\Admin\EmployeeController;
 use Botble\AiMultiIndustry\Http\Controllers\Admin\ChatConfigController;
+use Botble\AiMultiIndustry\Http\Controllers\Admin\Reports\ChatHistoryController;
 use Illuminate\Support\Facades\Route;
 
 AdminHelper::registerRoutes(function (): void {
@@ -28,5 +29,13 @@ AdminHelper::registerRoutes(function (): void {
     Route::group(['prefix' => 'ai-multi-industry/chat-config', 'as' => 'ai-multi-industry.chat-config.'], function (): void {
         Route::get('/', [ChatConfigController::class, 'index'])->name('index');
         Route::post('/', [ChatConfigController::class, 'update'])->name('update');
+        Route::get('config', [ChatConfigController::class, 'getConfig'])->name('config');
+    });
+
+    Route::group(['prefix' => 'ai-multi-industry/chat-history', 'as' => 'ai-multi-industry.chat-history.'], function (): void {
+        Route::get('/', [ChatHistoryController::class, 'index'])->name('index');
+        Route::get('{sessionId}', [ChatHistoryController::class, 'show'])->name('show');
+        Route::get('api/statistics', [ChatHistoryController::class, 'statistics'])->name('statistics');
+        Route::post('api/export', [ChatHistoryController::class, 'export'])->name('export');
     });
 });

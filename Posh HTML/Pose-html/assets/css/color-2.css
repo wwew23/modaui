@@ -1,0 +1,16 @@
+
+:root {
+    
+    --body: #fff;
+    --black: #000;
+    --white: #fff;
+    --theme: #C9E265;
+    --theme2: #C9E265;
+    --theme3: #C9E265;
+    --theme4: #C9E265;
+    --header: #121212;
+    --text: #808080;
+    --border: #FCFCFC;
+    --bg: #F0F0F0;
+    --box-shadow: 0px 1px 14px 0px rgba(0, 0, 0, 0.13);
+}

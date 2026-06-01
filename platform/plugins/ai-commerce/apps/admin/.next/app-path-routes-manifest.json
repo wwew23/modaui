@@ -1,0 +1,12 @@
+{
+  "/_global-error/page": "/_global-error",
+  "/_not-found/page": "/_not-found",
+  "/api/customers/route": "/api/customers",
+  "/api/discounts/route": "/api/discounts",
+  "/api/events/route": "/api/events",
+  "/api/merchants/[merchantId]/route": "/api/merchants/[merchantId]",
+  "/api/merchants/route": "/api/merchants",
+  "/api/orders/route": "/api/orders",
+  "/api/products/route": "/api/products",
+  "/page": "/"
+}
