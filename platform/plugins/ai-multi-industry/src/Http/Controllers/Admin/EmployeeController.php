@@ -1,11 +1,11 @@
 <?php
 
-namespace Botble\\AiMultiIndustry\\Http\\Controllers\\Admin;
+namespace Botble\AiMultiIndustry\Http\Controllers\Admin;
 
-use Botble\\Base\\Http\\Controllers\\BaseController;
-use Botble\\AiMultiIndustry\\Models\\IndustryEmployee;
-use Botble\\AiMultiIndustry\\Models\\Industry;
-use Illuminate\\Http\\Request;
+use Botble\Base\Http\Controllers\BaseController;
+use Botble\AiMultiIndustry\Models\IndustryEmployee;
+use Botble\AiMultiIndustry\Models\Industry;
+use Illuminate\Http\Request;
 
 class EmployeeController extends BaseController
 {

@@ -1,10 +1,10 @@
 <?php
 
-namespace Botble\\AiMultiIndustry\\Http\\Controllers\\Admin;
+namespace Botble\AiMultiIndustry\Http\Controllers\Admin;
 
-use Botble\\Base\\Http\\Controllers\\BaseController;
-use Illuminate\\Http\\Request;
-use Illuminate\\Support\\Facades\\Cache;
+use Botble\Base\Http\Controllers\BaseController;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 
 class ChatConfigController extends BaseController
 {

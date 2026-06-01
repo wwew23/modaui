@@ -100,7 +100,3 @@ class IndustryController extends BaseController
         ]);
     }
 }
-    {
-        return response()->json(['data' => Industry::all()]);
-    }
-}

@@ -1,15 +1,15 @@
 <?php
 
-namespace Botble\\AiMultiIndustry\\Http\\Controllers;
+namespace Botble\AiMultiIndustry\Http\Controllers;
 
-use App\\Services\\AiService;
-use Botble\\Base\\Http\\Controllers\\BaseController;
-use Botble\\AiMultiIndustry\\Models\\Industry;
-use Botble\\AiMultiIndustry\\Models\\IndustryEmployee;
-use Botble\\AiMultiIndustry\\Models\\AiChatSession;
-use Botble\\AiMultiIndustry\\Services\\AiCoordinator;
-use Illuminate\\Http\\Request;
-use Illuminate\\Support\\Facades\\Log;
+use App\Services\AiService;
+use Botble\Base\Http\Controllers\BaseController;
+use Botble\AiMultiIndustry\Models\Industry;
+use Botble\AiMultiIndustry\Models\IndustryEmployee;
+use Botble\AiMultiIndustry\Models\AiChatSession;
+use Botble\AiMultiIndustry\Services\AiCoordinator;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class AiChatController extends BaseController
 {
@@ -55,7 +55,7 @@ class AiChatController extends BaseController
                     'employee_name' => $employee->name,
                 ]),
             ]);
-        } catch (\\Throwable $e) {
+        } catch (\Throwable $e) {
             Log::error('AI Chat Error', [
                 'message' => $e->getMessage(),
                 'trace' => $e->getTraceAsString(),
