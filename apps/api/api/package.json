@@ -1,0 +1,33 @@
+{
+  "name": "modaui-api",
+  "version": "0.1.0",
+  "private": true,
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js"
+  },
+  "dependencies": {
+    "@types/uuid": "^10.0.0",
+    "@types/ws": "^8.18.1",
+    "adm-zip": "^0.5.17",
+    "ajv": "^8.12.0",
+    "body-parser": "^1.20.2",
+    "bullmq": "^5.77.6",
+    "express": "^4.18.2",
+    "ioredis": "^5.3.2",
+    "jsonwebtoken": "^9.0.0",
+    "multer": "^2.1.1",
+    "uuid": "^14.0.0",
+    "ws": "^8.21.0"
+  },
+  "devDependencies": {
+    "@prisma/client": "^6.19.3",
+    "@types/jest": "^29.5.12",
+    "@types/node": "^20.11.24",
+    "jest": "^29.7.0",
+    "prisma": "^6.19.3",
+    "ts-jest": "^29.1.2",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.3.3"
+  }
+}

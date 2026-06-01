@@ -1,0 +1,13 @@
+{
+  "template": "luxury-fashion",
+  "pages": [
+    { "id": "home", "title": "Home", "sections": ["header","hero","featured_products","brand_story","footer"] }
+  ],
+  "sections": [
+    { "id": "header", "type": "Header", "props": { "logo": "", "show_search": true } },
+    { "id": "hero", "type": "Hero", "props": { "title": "", "subtitle": "" } },
+    { "id": "featured_products", "type": "ProductGrid", "props": { "layout": "grid", "columns": 4 }, "binding": { "source": "collection", "collection_id": "featured" } },
+    { "id": "brand_story", "type": "BrandStory", "props": { "title": "Our Story", "body": "" } },
+    { "id": "footer", "type": "Footer", "props": { "show_payment_icons": true } }
+  ]
+}

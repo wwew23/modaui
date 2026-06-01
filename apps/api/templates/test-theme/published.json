@@ -1,0 +1,48 @@
+{
+  "content": [
+    {
+      "type": "FeatureSection",
+      "props": {
+        "title": "FeatureSection",
+        "subtitle": "",
+        "style": {}
+      },
+      "sourceFile": "sections/broken.liquid",
+      "sectionId": "0"
+    },
+    {
+      "type": "MinimalHero",
+      "props": {
+        "title": "Welcome",
+        "subtitle": "",
+        "background": "#ff0000",
+        "style": {}
+      },
+      "sourceFile": "sections/hero.liquid",
+      "sectionId": "1"
+    },
+    {
+      "type": "ProductGrid",
+      "props": {
+        "title": "Products",
+        "subtitle": "",
+        "style": {}
+      },
+      "sourceFile": "sections/product-grid.liquid",
+      "sectionId": "2"
+    }
+  ],
+  "root": {
+    "props": {
+      "title": "test-theme"
+    }
+  },
+  "tokens": {
+    "colors": [
+      "#ff0000"
+    ],
+    "fonts": [],
+    "spacings": [],
+    "containerWidth": "1200px"
+  }
+}

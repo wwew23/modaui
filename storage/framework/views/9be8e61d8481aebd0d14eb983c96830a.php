@@ -1,0 +1,2 @@
+<h2 <?php echo e($attributes->merge(['class' => 'offcanvas-title'])); ?>><?php echo e($slot); ?></h2>
+<?php /**PATH /www/wwwroot/modaui.com/platform/core/base/resources/views/components/offcanvas/title.blade.php ENDPATH**/ ?>

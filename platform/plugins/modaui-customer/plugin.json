@@ -1,0 +1,10 @@
+{
+    "id": "modaui/customer",
+    "name": "ModaUI Customer AI Widget",
+    "namespace": "Modaui\\Customer\\",
+    "provider": "Modaui\\Customer\\Providers\\HookServiceProvider",
+    "author": "ModaUI",
+    "version": "1.0.0",
+    "description": "Inject customer AI widget script",
+    "minimum_core_version": "7.6.0"
+}

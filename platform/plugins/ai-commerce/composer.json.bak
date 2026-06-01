@@ -1,0 +1,20 @@
+{
+    "name": "botble/ai-commerce",
+    "description": "Unified AI Commerce Operating System with Agent Runtime & Kernel.",
+    "type": "botble-plugin",
+    "require": {
+        "botble/platform": "*@dev"
+    },
+    "autoload": {
+        "psr-4": {
+            "Botble\\AiCommerce\\": "src/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Botble\\AiCommerce\\Providers\\AiCommerceServiceProvider"
+            ]
+        }
+    }
+}

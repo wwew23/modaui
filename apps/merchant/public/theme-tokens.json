@@ -1,0 +1,40 @@
+{
+  "spacing": {
+    "xxs": "4",
+    "xs": "8",
+    "sm": "12",
+    "md": "16",
+    "lg": "24",
+    "xl": "32",
+    "xxl": "48"
+  },
+  "radius": {
+    "none": "0",
+    "sm": "4",
+    "md": "8",
+    "lg": "16",
+    "round": "9999px"
+  },
+  "colors": {
+    "primary": "#0b5fff",
+    "secondary": "#0ea5a4",
+    "muted": "#6b7280",
+    "background": "#ffffff",
+    "surface": "#f8fafc",
+    "accent": "#f97316",
+    "pastelPink": "#ffd6e0"
+  },
+  "typography": {
+    "h1": "48",
+    "h2": "36",
+    "h3": "28",
+    "body": "16",
+    "small": "14"
+  },
+  "container": {
+    "narrow": "720px",
+    "normal": "1024px",
+    "wide": "1280px",
+    "full": "100%"
+  }
+}

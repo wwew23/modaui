@@ -1,0 +1,75 @@
+{
+  "components": [
+    {
+      "name": "Header",
+      "category": "layout",
+      "schema": { "type": "object", "properties": { "logo": { "type": "string" }, "show_search": { "type": "boolean" } } },
+      "uiHints": {
+        "logo": { "widget": "image", "placeholder": "Upload or paste logo URL" },
+        "show_search": { "widget": "switch" }
+      },
+      "editableProps": ["logo","show_search"]
+    },
+    {
+      "name": "Hero",
+      "category": "layout",
+      "schema": { "type": "object", "properties": { "title": { "type": "string" }, "subtitle": { "type": "string" }, "background": { "type": "string" } } },
+      "uiHints": {
+        "title": { "widget": "text", "placeholder": "输入标题" },
+        "subtitle": { "widget": "textarea", "placeholder": "输入副标题" },
+        "background": { "widget": "image" }
+      },
+      "editableProps": ["title","subtitle","background"]
+    },
+    {
+      "name": "ProductGrid",
+      "category": "commerce",
+      "schema": { "type": "object", "properties": { "layout": { "type": "string" }, "columns": { "type": "integer" } } },
+      "uiHints": {
+        "layout": { "widget": "select", "options": ["grid-2","grid-3","grid-4"] },
+        "columns": { "widget": "slider", "min": 1, "max": 6 }
+      },
+      "bindingSchema": { "type": "object", "properties": { "source": { "type": "string", "enum": ["collection","manual","auto","featured"] }, "collection_id": { "type": "string" } }, "required": ["source"] },
+      "editableProps": ["layout","columns"]
+    },
+    {
+      "name": "CollectionList",
+      "category": "commerce",
+      "schema": { "type": "object", "properties": { "layout": { "type": "string" } } },
+      "uiHints": {
+        "layout": { "widget": "select", "options": ["carousel","grid","list"] }
+      },
+      "bindingSchema": { "type": "object", "properties": { "source": { "type": "string", "enum": ["all","manual"] } }, "required": ["source"] },
+      "editableProps": ["layout"]
+    },
+    {
+      "name": "Announcement",
+      "category": "marketing",
+      "schema": { "type": "object", "properties": { "message": { "type": "string" }, "visible": { "type": "boolean" } } },
+      "uiHints": {
+        "message": { "widget": "text" },
+        "visible": { "widget": "switch" }
+      },
+      "editableProps": ["message","visible"]
+    },
+    {
+      "name": "BrandStory",
+      "category": "content",
+      "schema": { "type": "object", "properties": { "title": { "type": "string" }, "body": { "type": "string" } } },
+      "uiHints": {
+        "title": { "widget": "text" },
+        "body": { "widget": "textarea" }
+      },
+      "editableProps": ["title","body"]
+    },
+    {
+      "name": "Footer",
+      "category": "layout",
+      "schema": { "type": "object", "properties": { "show_payment_icons": { "type": "boolean" } } },
+      "uiHints": {
+        "show_payment_icons": { "widget": "switch" }
+      },
+      "editableProps": ["show_payment_icons"]
+    }
+  ]
+}

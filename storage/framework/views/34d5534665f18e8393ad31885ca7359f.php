@@ -1,0 +1,2 @@
+<?php echo $__env->make('packages/theme::errors.500', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
+<?php /**PATH /www/wwwroot/modaui.com/platform/themes/martfury (b/views/500.blade.php ENDPATH**/ ?>

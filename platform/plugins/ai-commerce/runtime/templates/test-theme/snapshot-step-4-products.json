@@ -1,0 +1,79 @@
+{
+  "content": [
+    {
+      "type": "FeatureSection",
+      "props": {
+        "title": "FeatureSection",
+        "subtitle": "",
+        "style": {}
+      },
+      "sourceFile": "sections/broken.liquid",
+      "sectionId": "0"
+    },
+    {
+      "type": "MinimalHero",
+      "props": {
+        "title": "Welcome",
+        "subtitle": "",
+        "background": "#ff0000",
+        "style": {}
+      },
+      "sourceFile": "sections/hero.liquid",
+      "sectionId": "1"
+    },
+    {
+      "type": "ProductGrid",
+      "props": {
+        "title": "Products",
+        "subtitle": "",
+        "style": {}
+      },
+      "sourceFile": "sections/product-grid.liquid",
+      "sectionId": "2"
+    }
+  ],
+  "root": {
+    "props": {
+      "title": "test-theme",
+      "context": {
+        "aiContext": "Imported theme from Shopify zip. Detected 3 liquid sections. Primary colors: #ff0000.",
+        "tokensSample": [
+          [
+            "colors",
+            [
+              "#ff0000"
+            ]
+          ],
+          [
+            "fonts",
+            []
+          ],
+          [
+            "spacings",
+            []
+          ],
+          [
+            "containerWidth",
+            "1200px"
+          ]
+        ],
+        "metadata": "test-theme"
+      },
+      "heroStyle": {
+        "size": "large",
+        "focal": "center"
+      }
+    }
+  },
+  "tokens": {
+    "colors": [
+      "#ff0000"
+    ],
+    "fonts": [],
+    "spacings": [],
+    "containerWidth": "1200px",
+    "typography": {
+      "fontFamily": "Playfair Display, serif"
+    }
+  }
+}

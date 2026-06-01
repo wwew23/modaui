@@ -1,0 +1,304 @@
+[
+  {
+    "type": "step",
+    "stepId": "theme",
+    "instruction": "选择一个适合女装的极简主题，调性为高级冷淡风",
+    "patches": [
+      {
+        "sectionId": "global",
+        "changes": {
+          "style": {
+            "typography": {
+              "fontFamily": "Playfair Display, serif"
+            }
+          },
+          "props": {
+            "context": {
+              "aiContext": "Imported theme from Shopify zip. Detected 3 liquid sections. Primary colors: #ff0000.",
+              "tokensSample": [
+                [
+                  "colors",
+                  [
+                    "#ff0000"
+                  ]
+                ],
+                [
+                  "fonts",
+                  []
+                ],
+                [
+                  "spacings",
+                  []
+                ],
+                [
+                  "containerWidth",
+                  "1200px"
+                ]
+              ],
+              "metadata": "test-theme"
+            }
+          }
+        }
+      }
+    ],
+    "snapshot": "/www/wwwroot/modaui.com/apps/api/templates/test-theme/snapshot-step-0-theme.json",
+    "id": "1780004403246",
+    "timestamp": "2026-05-28T21:40:03.246Z"
+  },
+  {
+    "type": "step",
+    "stepId": "branding",
+    "instruction": "生成品牌配色、主色、点缀色与 Logo 建议",
+    "patches": [
+      {
+        "sectionId": "global",
+        "changes": {
+          "style": {},
+          "props": {
+            "context": {
+              "aiContext": "Imported theme from Shopify zip. Detected 3 liquid sections. Primary colors: #ff0000.",
+              "tokensSample": [
+                [
+                  "colors",
+                  [
+                    "#ff0000"
+                  ]
+                ],
+                [
+                  "fonts",
+                  []
+                ],
+                [
+                  "spacings",
+                  []
+                ],
+                [
+                  "containerWidth",
+                  "1200px"
+                ]
+              ],
+              "metadata": "test-theme"
+            }
+          }
+        }
+      }
+    ],
+    "snapshot": "/www/wwwroot/modaui.com/apps/api/templates/test-theme/snapshot-step-1-branding.json",
+    "id": "1780004403247",
+    "timestamp": "2026-05-28T21:40:03.247Z"
+  },
+  {
+    "type": "step",
+    "stepId": "collections",
+    "instruction": "创建 2-3 个 collection: 热门商品、推荐、上新",
+    "patches": [
+      {
+        "sectionId": "global",
+        "changes": {
+          "style": {},
+          "props": {
+            "context": {
+              "aiContext": "Imported theme from Shopify zip. Detected 3 liquid sections. Primary colors: #ff0000.",
+              "tokensSample": [
+                [
+                  "colors",
+                  [
+                    "#ff0000"
+                  ]
+                ],
+                [
+                  "fonts",
+                  []
+                ],
+                [
+                  "spacings",
+                  []
+                ],
+                [
+                  "containerWidth",
+                  "1200px"
+                ]
+              ],
+              "metadata": "test-theme"
+            }
+          }
+        }
+      }
+    ],
+    "snapshot": "/www/wwwroot/modaui.com/apps/api/templates/test-theme/snapshot-step-2-collections.json",
+    "id": "1780004403247",
+    "timestamp": "2026-05-28T21:40:03.247Z"
+  },
+  {
+    "type": "step",
+    "stepId": "homepage",
+    "instruction": "生成首页结构：Hero (大图), FeatureSection, ProductGrid, Testimonials, Footer",
+    "patches": [
+      {
+        "sectionId": "global",
+        "changes": {
+          "style": {},
+          "props": {
+            "heroStyle": {
+              "size": "large",
+              "focal": "center"
+            },
+            "context": {
+              "aiContext": "Imported theme from Shopify zip. Detected 3 liquid sections. Primary colors: #ff0000.",
+              "tokensSample": [
+                [
+                  "colors",
+                  [
+                    "#ff0000"
+                  ]
+                ],
+                [
+                  "fonts",
+                  []
+                ],
+                [
+                  "spacings",
+                  []
+                ],
+                [
+                  "containerWidth",
+                  "1200px"
+                ]
+              ],
+              "metadata": "test-theme"
+            }
+          }
+        }
+      }
+    ],
+    "snapshot": "/www/wwwroot/modaui.com/apps/api/templates/test-theme/snapshot-step-3-homepage.json",
+    "id": "1780004403248",
+    "timestamp": "2026-05-28T21:40:03.248Z"
+  },
+  {
+    "type": "step",
+    "stepId": "products",
+    "instruction": "生成产品展示风格与 CTA 层级",
+    "patches": [
+      {
+        "sectionId": "global",
+        "changes": {
+          "style": {},
+          "props": {
+            "context": {
+              "aiContext": "Imported theme from Shopify zip. Detected 3 liquid sections. Primary colors: #ff0000.",
+              "tokensSample": [
+                [
+                  "colors",
+                  [
+                    "#ff0000"
+                  ]
+                ],
+                [
+                  "fonts",
+                  []
+                ],
+                [
+                  "spacings",
+                  []
+                ],
+                [
+                  "containerWidth",
+                  "1200px"
+                ]
+              ],
+              "metadata": "test-theme"
+            }
+          }
+        }
+      }
+    ],
+    "snapshot": "/www/wwwroot/modaui.com/apps/api/templates/test-theme/snapshot-step-4-products.json",
+    "id": "1780004403248",
+    "timestamp": "2026-05-28T21:40:03.248Z"
+  },
+  {
+    "type": "step",
+    "stepId": "navigation",
+    "instruction": "生成主导航和页脚导航结构",
+    "patches": [
+      {
+        "sectionId": "global",
+        "changes": {
+          "style": {},
+          "props": {
+            "context": {
+              "aiContext": "Imported theme from Shopify zip. Detected 3 liquid sections. Primary colors: #ff0000.",
+              "tokensSample": [
+                [
+                  "colors",
+                  [
+                    "#ff0000"
+                  ]
+                ],
+                [
+                  "fonts",
+                  []
+                ],
+                [
+                  "spacings",
+                  []
+                ],
+                [
+                  "containerWidth",
+                  "1200px"
+                ]
+              ],
+              "metadata": "test-theme"
+            }
+          }
+        }
+      }
+    ],
+    "snapshot": "/www/wwwroot/modaui.com/apps/api/templates/test-theme/snapshot-step-5-navigation.json",
+    "id": "1780004403249",
+    "timestamp": "2026-05-28T21:40:03.249Z"
+  },
+  {
+    "type": "step",
+    "stepId": "publish",
+    "instruction": "检查并准备发布",
+    "patches": [
+      {
+        "sectionId": "global",
+        "changes": {
+          "style": {},
+          "props": {
+            "context": {
+              "aiContext": "Imported theme from Shopify zip. Detected 3 liquid sections. Primary colors: #ff0000.",
+              "tokensSample": [
+                [
+                  "colors",
+                  [
+                    "#ff0000"
+                  ]
+                ],
+                [
+                  "fonts",
+                  []
+                ],
+                [
+                  "spacings",
+                  []
+                ],
+                [
+                  "containerWidth",
+                  "1200px"
+                ]
+              ],
+              "metadata": "test-theme"
+            }
+          }
+        }
+      }
+    ],
+    "snapshot": "/www/wwwroot/modaui.com/apps/api/templates/test-theme/snapshot-step-6-publish.json",
+    "id": "1780004403249",
+    "timestamp": "2026-05-28T21:40:03.249Z"
+  }
+]

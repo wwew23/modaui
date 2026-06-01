@@ -1,0 +1,10 @@
+{
+  "name": "node-domexception",
+  "version": "1.0.0",
+  "description": "Shim for deprecated node-domexception using native DOMException",
+  "main": "index.js",
+  "exports": {
+    "import": "./index.mjs",
+    "require": "./index.js"
+  }
+}

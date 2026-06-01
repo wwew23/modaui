@@ -1,0 +1,12 @@
+{
+  "template": "minimal-tech",
+  "pages": [
+    { "id": "home", "title": "Welcome", "sections": ["header","hero","catalog","footer"] }
+  ],
+  "sections": [
+    { "id": "header", "type": "Header", "props": { "logo": "", "show_search": false } },
+    { "id": "hero", "type": "Hero", "props": { "title": "", "subtitle": "" } },
+    { "id": "catalog", "type": "ProductGrid", "props": { "layout": "list", "columns": 1 }, "binding": { "source": "collection", "collection_id": "new-arrivals" } },
+    { "id": "footer", "type": "Footer", "props": { "show_payment_icons": false } }
+  ]
+}

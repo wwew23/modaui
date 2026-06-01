@@ -1,0 +1,11 @@
+{
+  "name": "botble/ai-multi-industry",
+  "description": "AI Multi Industry team plugin for Botble",
+  "type": "library",
+  "autoload": {
+    "psr-4": {
+      "Botble\\AiMultiIndustry\\": "src/"
+    }
+  },
+  "require": {}
+}

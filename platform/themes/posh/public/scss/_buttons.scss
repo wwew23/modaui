@@ -1,0 +1,152 @@
+//>>>>> Component Button Here <<<<<//
+
+.theme-btn {
+    background-color: $white;
+    color: $header-color;
+    display: inline-block;
+    font-size: 16px;
+    font-weight: 600;
+    padding: 16px 30px;
+    border-radius: 0;
+    text-transform: capitalize;
+    -webkit-transition: all 0.3s ease-in-out;
+    transition: all 0.3s ease-in-out;
+    position: relative;
+    z-index: 1;
+    line-height: 1;
+
+    &::before {
+        content: "";
+        background-color: $theme-color;
+        width: 0;
+        height: 50%;
+        position: absolute;
+        top: 0;
+        left: 0;
+        -webkit-transition: all 0.3s cubic-bezier(0.785, 0.135, 0.15, 0.86);
+        transition: all 0.3s cubic-bezier(0.785, 0.135, 0.15, 0.86);
+        z-index: -1;
+    }
+
+    &::after {
+        content: "";
+        background-color: $theme-color;
+        width: 0;
+        height: 50%;
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        -webkit-transition: all 0.3s cubic-bezier(0.785, 0.135, 0.15, 0.86);
+        transition: all 0.3s cubic-bezier(0.785, 0.135, 0.15, 0.86);
+        z-index: -1;
+    }
+
+    i {
+        margin-left: 10px;
+    }
+
+    &.theme-btn2 {
+      background-color: $white;
+    }
+
+     &.theme-btn3 {
+      background-color: $white;
+
+      &:hover {
+         color: $white;
+      }
+    }
+
+     &.theme-btn4 {
+      background-color: $theme-color-4;
+    }
+
+    &.hover-white {
+      &::before,&::after {
+        background-color: $white;
+      }
+
+      &:hover {
+        color: $header-color;
+      }
+    }
+
+    &.border-btn {
+      background: transparent;
+      border: 1px solid #808080;
+
+      &::before,&::after {
+        background-color: $theme-color-2;
+      }
+
+      &:hover {
+        border: 1px solid $theme-color-2;
+        color: $header-color;
+      }
+    }
+
+    &.border-btn2 {
+      background: transparent;
+      border: 1px solid #808080;
+
+      &::before,&::after {
+        background-color: $theme-color-3;
+      }
+
+      &:hover {
+        border: 1px solid $theme-color-3;
+        color: $white;
+      }
+    }
+
+    &:hover {
+       color: $white;
+
+        &::before,&::after {
+            width: 100%;
+        }
+    }
+
+
+    @include breakpoint (max-md){
+        padding: 20px 32px;
+    }
+
+    @include breakpoint (max-sm){
+        padding: 18px 30px;
+        font-size: 14px;
+    }
+}
+
+//>>>>> Component Button End <<<<<//
+
+
+@keyframes slideRight {
+    49% {
+      -webkit-transform: translateX(100%);
+      transform: translateX(100%);
+    }
+    50% {
+      opacity: 0;
+      -webkit-transform: translateX(-100%);
+      transform: translateX(-100%);
+    }
+    51% {
+      opacity: 1;
+    }
+}
+
+@keyframes slideUp {
+    49% {
+      -webkit-transform: translateY(-100%);
+      transform: translateY(-100%);
+    }
+    50% {
+      opacity: 0;
+      -webkit-transform: translateY(100%);
+      transform: translateY(100%);
+    }
+    51% {
+      opacity: 1;
+    }
+}

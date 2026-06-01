@@ -1,0 +1,1 @@
+Imported theme from Shopify zip. Detected 3 liquid sections. Primary colors: #ff0000.

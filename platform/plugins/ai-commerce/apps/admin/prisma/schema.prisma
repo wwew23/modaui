@@ -1,0 +1,309 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Merchant {
+  id               String           @id @default(cuid())
+  name             String
+  merchantName     String           @unique
+  plan             String           @default("Starter")
+  aiUsage          String?
+  aiUsageNumeric   BigInt           @default(0)
+  limitPattern     String?
+  status           String           @default("active")
+  tokenCost        Float            @default(0)
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
+  adminAccessToken String?
+  shopDomain       String?          @unique
+  webhookSecret    String?
+  apiKey           String?          @unique
+  tenantId         String?          @unique
+  actionPlans      ActionPlan[]
+  assistantUsage   AssistantUsage[]
+  billingRecords   BillingRecord[]
+  customers        Customer[]
+  discounts        Discount[]
+  eventLogs        EventLog[]
+  orders           Order[]
+  products         Product[]
+  stores           Store[]
+  subscription     Subscription?
+  usageMetrics     UsageMetric[]
+
+  @@map("merchants")
+}
+
+model Subscription {
+  id                 String   @id @default(cuid())
+  merchantId         String   @unique
+  planId             String
+  status             String
+  currentPeriodStart DateTime
+  currentPeriodEnd   DateTime
+  cancelAtPeriodEnd  Boolean  @default(false)
+  tokenQuota         BigInt   @default(500000)
+  agentQuota         Int      @default(2)
+  storeQuota         Int      @default(1)
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+  merchant           Merchant @relation(fields: [merchantId], references: [id], onDelete: Cascade)
+
+  @@map("subscriptions")
+}
+
+model UsageMetric {
+  id         String   @id @default(cuid())
+  merchantId String
+  type       String
+  value      Int      @default(0)
+  metadata   Json?
+  timestamp  DateTime @default(now())
+  merchant   Merchant @relation(fields: [merchantId], references: [id], onDelete: Cascade)
+
+  @@index([merchantId, type, timestamp])
+  @@map("usage_metrics")
+}
+
+model AssistantUsage {
+  id          String   @id @default(cuid())
+  merchantId  String
+  assistantId String
+  taskCount   Int      @default(0)
+  tokenCount  BigInt   @default(0)
+  updatedAt   DateTime @updatedAt
+  merchant    Merchant @relation(fields: [merchantId], references: [id], onDelete: Cascade)
+
+  @@unique([merchantId, assistantId])
+  @@map("assistant_usage")
+}
+
+model BillingRecord {
+  id             String   @id @default(cuid())
+  merchantId     String
+  amount         Float
+  currency       String   @default("USD")
+  status         String
+  periodStart    DateTime
+  periodEnd      DateTime
+  invoiceUrl     String?
+  usageBreakdown Json?
+  createdAt      DateTime @default(now())
+  merchant       Merchant @relation(fields: [merchantId], references: [id], onDelete: Cascade)
+
+  @@map("billing_records")
+}
+
+model Store {
+  id         String           @id @default(cuid())
+  name       String
+  address    String
+  city       String
+  latitude   Float?
+  longitude  Float?
+  status     String           @default("active")
+  merchantId String
+  createdAt  DateTime         @default(now())
+  updatedAt  DateTime         @updatedAt
+  inventory  StoreInventory[]
+  orders     StoreOrder[]
+  staff      StoreStaff[]
+  merchant   Merchant         @relation(fields: [merchantId], references: [id], onDelete: Cascade)
+
+  @@map("stores")
+}
+
+model StoreStaff {
+  id        String   @id @default(cuid())
+  storeId   String
+  name      String
+  email     String?
+  role      String   @default("staff")
+  status    String   @default("active")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  store     Store    @relation(fields: [storeId], references: [id], onDelete: Cascade)
+
+  @@map("store_staff")
+}
+
+model StoreInventory {
+  id                 String   @id @default(cuid())
+  storeId            String
+  productId          String
+  sku                String
+  stock              Int      @default(0)
+  shopifyLocationId  String?
+  shopifyInventoryId String?
+  updatedAt          DateTime @updatedAt
+  store              Store    @relation(fields: [storeId], references: [id], onDelete: Cascade)
+
+  @@unique([storeId, productId])
+  @@map("store_inventory")
+}
+
+model StoreOrder {
+  id           String    @id @default(cuid())
+  storeId      String
+  orderId      String?
+  type         String    @default("walk_in")
+  status       String    @default("completed")
+  amount       Float
+  items        Json
+  customerName String?
+  pickupEta    DateTime?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  store        Store     @relation(fields: [storeId], references: [id], onDelete: Cascade)
+
+  @@map("store_orders")
+}
+
+model ActionPlan {
+  id         String        @id @default(cuid())
+  merchantId String
+  intent     String?
+  status     String        @default("pending")
+  steps      Json
+  createdAt  DateTime      @default(now())
+  updatedAt  DateTime      @updatedAt
+  merchant   Merchant      @relation(fields: [merchantId], references: [id], onDelete: Cascade)
+  traces     ActionTrace[]
+
+  @@map("action_plans")
+}
+
+model ActionTrace {
+  id         String     @id @default(cuid())
+  planId     String
+  merchantId String
+  domain     String
+  action     String
+  payload    Json
+  result     Json?
+  shopifyIds String[]   @default([])
+  status     String     @default("pending")
+  error      String?
+  timestamp  DateTime   @default(now())
+  plan       ActionPlan @relation(fields: [planId], references: [id], onDelete: Cascade)
+
+  @@map("action_traces")
+}
+
+model Product {
+  id          String   @id @default(cuid())
+  title       String
+  description String
+  price       Float
+  sku         String
+  category    String
+  stock       Int      @default(0)
+  sales       Int      @default(0)
+  status      String   @default("Active")
+  image       String?
+  merchantId  String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  merchant    Merchant @relation(fields: [merchantId], references: [id], onDelete: Cascade)
+
+  @@map("products")
+}
+
+model Order {
+  id         String   @id @default(cuid())
+  orderId    String
+  customerId String
+  status     String   @default("Processing")
+  amount     Float
+  date       String
+  city       String
+  merchantId String
+  createdAt  DateTime @default(now())
+  merchant   Merchant @relation(fields: [merchantId], references: [id], onDelete: Cascade)
+
+  @@map("orders")
+}
+
+model Customer {
+  id         String   @id @default(cuid())
+  name       String
+  email      String
+  orders     Int
+  spent      Float
+  lastOrder  String
+  status     String   @default("active")
+  merchantId String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  merchant   Merchant @relation(fields: [merchantId], references: [id], onDelete: Cascade)
+
+  @@map("customers")
+}
+
+model Discount {
+  id         String   @id @default(cuid())
+  code       String
+  type       String
+  value      Float
+  usageCount Int      @default(0)
+  usageLimit Int
+  status     String   @default("active")
+  startDate  String
+  endDate    String
+  merchantId String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  merchant   Merchant @relation(fields: [merchantId], references: [id], onDelete: Cascade)
+
+  @@map("discounts")
+}
+
+model Agent {
+  id          String   @id @default(cuid())
+  name        String
+  displayName String
+  status      String   @default("idle")
+  model       String
+  taskCount   Int      @default(0)
+  memory      String
+  tools       String   @default("[]")
+  merchantId  String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("agents")
+}
+
+model AuditLog {
+  id         String   @id @default(cuid())
+  userId     String
+  merchantId String
+  action     String
+  resource   String
+  resourceId String?
+  payload    Json?
+  timestamp  DateTime @default(now())
+  ipAddress  String?
+  createdAt  DateTime @default(now())
+  status     String   @default("success")
+
+  @@map("audit_logs")
+}
+
+model EventLog {
+  id          String    @id @default(cuid())
+  merchantId  String
+  eventType   String
+  payload     Json
+  status      String    @default("created")
+  createdAt   DateTime  @default(now())
+  processedAt DateTime?
+  merchant    Merchant  @relation(fields: [merchantId], references: [id], onDelete: Cascade)
+
+  @@map("event_logs")
+}

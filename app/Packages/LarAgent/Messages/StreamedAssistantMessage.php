@@ -1,0 +1,73 @@
+<?php
+
+namespace LarAgent\Messages;
+
+use LarAgent\Core\Abstractions\Message;
+use LarAgent\Core\Contracts\Message as MessageInterface;
+use LarAgent\Messages\DataModels\Content\TextContent;
+use LarAgent\Messages\DataModels\MessageContent;
+
+class StreamedAssistantMessage extends AssistantMessage implements MessageInterface
+{
+    protected bool $isComplete = false;
+
+    protected ?string $lastChunk = null;
+
+    /**
+     * Internal string buffer for streaming content.
+     * Kept separate from $content (TextContent) until streaming completes.
+     */
+    protected string $contentBuffer = '';
+
+    public function __construct(string $content = '', array $metadata = [])
+    {
+        parent::__construct($content, $metadata);
+        // Initialize buffer from content
+        $this->contentBuffer = $content;
+    }
+
+    /**
+     * Append content to the existing message content
+     *
+     * @param  string  $chunk  Content chunk to append
+     */
+    public function appendContent(string $chunk): self
+    {
+        $this->contentBuffer .= $chunk;
+        $this->lastChunk = $chunk;
+        // Update the MessageContent with the new buffer
+        $this->content = new MessageContent([new TextContent($this->contentBuffer)]);
+
+        return $this;
+    }
+
+    /**
+     * Mark the message as complete
+     */
+    public function setComplete(bool $isComplete = true): self
+    {
+        $this->isComplete = $isComplete;
+
+        return $this;
+    }
+
+    /**
+     * Check if the message is complete
+     */
+    public function isComplete(): bool
+    {
+        return $this->isComplete;
+    }
+
+    public function getLastChunk(): ?string
+    {
+        return $this->lastChunk;
+    }
+
+    public function resetLastChunk(): self
+    {
+        $this->lastChunk = null;
+
+        return $this;
+    }
+}

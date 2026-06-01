@@ -1,0 +1,10 @@
+{
+    "name": "AI Commerce OS",
+    "id": "botble/ai-commerce",
+    "author": "ModaUI",
+    "type": "plugin",
+    "namespace": "Botble\\AiCommerce\\",
+    "description": "Unified AI Commerce Operating System with Agent Runtime & Kernel.",
+    "version": "1.0.0",
+    "provider": "Botble\\AiCommerce\\Providers\\AiCommerceServiceProvider"
+}

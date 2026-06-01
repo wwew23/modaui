@@ -1,0 +1,13 @@
+{
+  "template": "beauty-brand",
+  "pages": [
+    { "id": "home", "title": "Beauty", "sections": ["header","hero","best_sellers","brand_story","footer"] }
+  ],
+  "sections": [
+    { "id": "header", "type": "Header", "props": { "logo": "", "show_search": true } },
+    { "id": "hero", "type": "Hero", "props": { "title": "", "subtitle": "" } },
+    { "id": "best_sellers", "type": "ProductGrid", "props": { "layout": "grid", "columns": 3 }, "binding": { "source": "collection", "collection_id": "best-sellers" } },
+    { "id": "brand_story", "type": "BrandStory", "props": { "title": "About Us", "body": "" } },
+    { "id": "footer", "type": "Footer", "props": { "show_payment_icons": true } }
+  ]
+}

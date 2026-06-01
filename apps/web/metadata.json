@@ -1,0 +1,6 @@
+{
+  "name": "modaui",
+  "description": "modaui 是一个一句话生成智能商铺或独立站系统的多模态 AI 平台，支持语音/图片多模态互动导购和安全收银支付结算功能。",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

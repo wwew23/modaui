@@ -1,0 +1,139 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Merchant {
+  id          String   @id @default(cuid())
+  name        String
+  merchantName String
+  plan        String   @default("Starter")
+  aiUsage     String
+  aiUsageNumeric Float
+  limitPattern String
+  status      String   @default("active")
+  tokenCost   Float    @default(0)
+  products    Product[]
+  orders      Order[]
+  customers   Customer[]
+  discounts   Discount[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("merchants")
+}
+
+model Product {
+  id          String   @id @default(cuid())
+  title       String
+  description String
+  price       Float
+  sku         String
+  category    String
+  stock       Int      @default(0)
+  sales       Int      @default(0)
+  status      String   @default("Active")
+  image       String?
+  merchantId  String
+  merchant    Merchant @relation(fields: [merchantId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("products")
+}
+
+model Order {
+  id          String   @id @default(cuid())
+  orderId     String
+  customerId  String
+  status      String   @default("Processing")
+  amount      Float
+  date        String
+  city        String
+  merchantId  String
+  merchant    Merchant @relation(fields: [merchantId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+
+  @@map("orders")
+}
+
+model Customer {
+  id         String   @id @default(cuid())
+  name       String
+  email      String
+  orders     Int
+  spent      Float
+  lastOrder  String
+  status     String   @default("active")
+  merchantId String
+  merchant   Merchant @relation(fields: [merchantId], references: [id], onDelete: Cascade)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@map("customers")
+}
+
+model Discount {
+  id          String   @id @default(cuid())
+  code        String
+  type        String
+  value       Float
+  usageCount  Int      @default(0)
+  usageLimit  Int
+  status      String   @default("active")
+  startDate   String
+  endDate     String
+  merchantId  String
+  merchant    Merchant @relation(fields: [merchantId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("discounts")
+}
+
+model Agent {
+  id          String   @id @default(cuid())
+  name        String
+  displayName String
+  status      String   @default("idle")
+  model       String
+  taskCount   Int      @default(0)
+  memory      String
+  tools       String   @default("[]")
+  merchantId  String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("agents")
+}
+
+model AuditLog {
+  id          String   @id @default(cuid())
+  userId      String
+  merchantId  String
+  action      String
+  resource    String
+  resourceId  String?
+  payload     Json?
+  timestamp   DateTime @default(now())
+  ipAddress   String?
+  createdAt   DateTime @default(now())
+
+  @@map("audit_logs")
+}
+
+model EventLog {
+  id          String   @id @default(cuid())
+  merchantId  String
+  eventType   String
+  payload     Json
+  status      String   @default("created")
+  createdAt   DateTime @default(now())
+  processedAt DateTime?
+
+  @@map("event_logs")
+}

@@ -1,0 +1,261 @@
+.gt-instagram-image {
+    position: relative;
+    overflow: hidden;
+
+    &::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        right: 0;
+        background: #FF914D;
+        opacity: 0.4;
+        transition: -webkit-transform 0.4s ease;
+        transition: transform 0.4s ease;
+        transition: transform 0.4s ease, -webkit-transform 0.4s ease;
+        transform-origin: top right;
+        -webkit-transform: scale(1, 0);
+        transform: scale(1, 0);
+        z-index: 9;
+    }
+
+    img {
+        @include imgw;
+        transform: scale(1.02);
+        transition: all 1.5s ease-out;
+    }
+
+    .gt-icon {
+        display: inline-block;
+        position: absolute;
+        top: -100px;
+        left: 50%;
+        transform: translate(-50%,-50%);
+        font-size: 30px;
+        color: $white;
+        @include transition;
+        opacity: 0;
+        visibility: hidden;
+        z-index: 99;
+    }
+
+    &:hover {
+        .gt-icon {
+            top: 50%;
+            opacity: 1;
+            visibility: visible;
+        }
+
+        img {
+            -webkit-transform: scale3d(1.1, 1.1, 1);
+            transform: scale3d(1.1, 1.1, 1);
+        }
+
+        &::before {
+            -webkit-transform: scale(1, 1);
+            transform: scale(1, 1);
+            transform-origin: bottom center;
+        }
+    }
+
+    &.style-2 {
+        &::before {
+            background-color: rgba(56, 182, 255, 0.4);
+        }
+    }
+}
+
+.cta-subscribe-section {
+    padding: 80px 0;
+    background-color: #121212;
+}
+
+.cta-subscribe-wrapper {
+    @include flex;
+    justify-content: space-between;
+
+    @include breakpoint (max-xl){
+        flex-wrap: wrap;
+        gap: 30px;
+        justify-content: center;
+        text-align: center;
+    }
+
+    h2 {
+        color: $white;
+        font-size: 32px;
+
+        @include breakpoint (max-lg){
+            br {
+                display: none;
+            }
+        }
+
+        @include breakpoint (max-sm){
+            font-size: 26px;
+        }
+
+        span {
+            color: $theme-color;
+        }
+    }
+
+    form {
+        @include flex;
+        gap: 12px;
+        max-width: 565px;
+        width: 100%;
+
+        .form-clt {
+            max-width: 392px;
+            width: 100%;
+
+            input {
+                width: 100%;
+                border: 1.5px solid #424242;
+                background-color: transparent;
+                line-height: 1;
+                padding: 17.5px 20px;
+                outline: none;
+                color: $text-color;
+            }
+        }
+
+        .theme-btn {
+            padding: 20px 32px;
+
+            &::before,&::after {
+                background-color: $theme-color;
+            } 
+
+            &:hover {
+                color: $white;
+            }
+        }
+    }
+}
+
+.cta-wrapper-2 {
+    background-color: $theme-color-2;
+    padding: 70px 60px;
+    position: relative;
+    border: 5px solid $white;
+
+     @include breakpoint (max-lg){
+        padding: 50px 30px;
+    }
+
+    .cta-shape {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        z-index: 1;
+
+        @include breakpoint (max-lg){
+            display: none;
+        }
+
+        img {
+            height: 100%;
+        }
+    }
+
+    .content {
+        position: relative;
+        z-index: 999;
+
+        h2 {
+            font-size: 40px;
+            font-weight: 700;
+            margin-bottom: 20px;
+
+             @include breakpoint (max-sm){
+                font-size: 26px;
+            }
+        }
+
+        p {
+            font-size: 16px;
+            font-weight: 400;
+            color: #121212;
+            max-width: 500px;
+        }
+
+        .cta-btn-items {
+            margin-top: 40px;
+        }
+
+        .theme-btn {
+            background-color: $white;
+            color: $header-color;
+
+            &::after,&::before {
+                background-color: $header-color;
+            }
+
+            &:hover {
+                color: $white;
+            }
+        }
+    }
+
+    .cta-image {
+        position: absolute;
+        right: 0;
+        top: 0;
+        bottom: 0;
+
+         @include breakpoint (max-lg){
+            display: none;
+        }
+
+        img {
+            height: 100%;
+        }
+    }
+}
+
+.cta-section-2 {
+    position: relative;
+    z-index: 9;
+
+    &::before {
+        @include before;
+        background: #F0F0F0;
+        top: 50%;
+        z-index: -1;
+    }
+}
+
+.gt-instagram-section {
+    position: relative;
+    z-index: 9;
+
+    &.style-3 {
+        &::before {
+            @include before;
+            background-color: #121212;
+            z-index: -1;
+            top: 75%;
+            height: initial;
+        }
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

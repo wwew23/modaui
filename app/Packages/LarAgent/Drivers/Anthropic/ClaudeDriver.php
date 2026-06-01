@@ -1,0 +1,528 @@
+<?php
+
+namespace LarAgent\Drivers\Anthropic;
+
+use Anthropic;
+use GuzzleHttp\Client;
+use LarAgent\Core\Abstractions\LlmDriver;
+use LarAgent\Core\Contracts\LlmDriver as LlmDriverInterface;
+use LarAgent\Core\Contracts\MessageFormatter;
+use LarAgent\Core\Contracts\Tool as ToolInterface;
+use LarAgent\Core\Contracts\ToolCall as ToolCallInterface;
+use LarAgent\Core\DTO\DriverConfig;
+use LarAgent\Messages\AssistantMessage;
+use LarAgent\Messages\StreamedAssistantMessage;
+use LarAgent\Messages\ToolCallMessage;
+use LarAgent\ToolCall;
+use LarAgent\Usage\DataModels\Usage;
+
+class ClaudeDriver extends LlmDriver implements LlmDriverInterface
+{
+    protected mixed $client;
+
+    protected string $default_url = 'api.anthropic.com/v1';
+
+    protected MessageFormatter $formatter;
+
+    public function __construct(DriverConfig|array $settings = [])
+    {
+        parent::__construct($settings);
+        $apiKey = $this->getDriverConfig()->apiKey;
+        $apiUrl = $this->getDriverConfig()->apiUrl ?? $this->default_url;
+        if ($apiKey) {
+            $this->client = $this->buildClient($apiKey, $apiUrl);
+        } else {
+            throw new \Exception('API key is required to use the Claude driver.');
+        }
+        $this->formatter = $this->createFormatter();
+    }
+
+    /**
+     * Create the message formatter for this driver.
+     */
+    protected function createFormatter(): MessageFormatter
+    {
+        return new ClaudeMessageFormatter;
+    }
+
+    /**
+     * Get the message formatter.
+     */
+    public function getFormatter(): MessageFormatter
+    {
+        return $this->formatter;
+    }
+
+    protected function buildClient(string $apiKey, string $baseUrl): mixed
+    {
+        $client = Anthropic::factory()
+            ->withApiKey($apiKey)
+            ->withBaseUri($baseUrl)
+            ->withHttpHeader('anthropic-version', '2023-06-01')
+            ->withHttpClient($httpClient = new Client([]))
+            ->make();
+
+        return $client;
+    }
+
+    public function sendMessage(array $messages, DriverConfig|array $overrideSettings = []): AssistantMessage
+    {
+        if (empty($this->client)) {
+            throw new \Exception('API key is required to use the Claude driver.');
+        }
+
+        $payload = $this->preparePayload($messages, $overrideSettings);
+
+        $response = $this->client->messages()->create($payload);
+        $this->lastResponse = $response;
+
+        // Convert response object to array for formatter
+        $responseArray = $response->toArray();
+
+        // Use formatter extraction methods
+        $finishReason = $this->formatter->extractFinishReason($responseArray);
+        $usageData = $this->formatter->extractUsage($responseArray);
+        $usage = ! empty($usageData) ? Usage::fromArray($usageData) : null;
+
+        if ($finishReason === 'tool_calls') {
+            $toolCalls = $this->formatter->extractToolCalls($responseArray);
+
+            $message = new ToolCallMessage($toolCalls);
+            $message->setUsage($usage);
+
+            return $message;
+        }
+
+        if ($finishReason === 'stop') {
+            $content = $this->formatter->extractContent($responseArray);
+
+            $message = new AssistantMessage($content);
+            $message->setUsage($usage);
+
+            return $message;
+        }
+
+        if ($finishReason === 'refusal') {
+            $content = $this->formatter->extractContent($responseArray);
+
+            throw new \Exception('Claude refused the request: '.($content ?: 'No reason provided.'));
+        }
+
+        throw new \Exception('Unexpected stop reason: '.$response->stop_reason);
+    }
+
+    public function sendMessageStreamed(array $messages, DriverConfig|array $overrideSettings = [], ?callable $callback = null): \Generator
+    {
+        if (empty($this->client)) {
+            throw new \Exception('API key is required to use the Claude driver.');
+        }
+
+        $payload = $this->preparePayload($messages, $overrideSettings);
+        $payload['stream'] = true;
+
+        $response = $this->client->messages()->createStreamed($payload);
+        $streamedMessage = new StreamedAssistantMessage;
+
+        $toolCalls = [];
+        $pendingToolInputs = []; // id => partial JSON
+        $pendingToolNames = []; // id => tool name
+        $currentToolBlockIds = []; // index => tool use id
+
+        $firstUsage = null; // first snapshot
+        $finalUsage = null; // final snapshot
+        $usageTimeline = []; // list of snapshots for each message type
+
+        foreach ($response as $chunk) {
+            $this->lastResponse = $chunk;
+
+            $type = $chunk->type ?? null;
+
+            // Message start
+            if ($type === 'message_start') {
+                $messageStartUsage = $chunk->usage?->toArray();
+                if ($messageStartUsage) {
+                    // create earliest usage
+                    $firstUsage = $firstUsage ?? $messageStartUsage;
+                    // create earliest usage timeline
+                    $usageTimeline[] = ['event' => 'message_start', 'usage' => $messageStartUsage];
+
+                    // Normalize usage through formatter
+                    $normalizedUsage = $this->formatter->extractUsage(['usage' => $messageStartUsage]);
+                    $streamedMessage->setUsage(Usage::fromArray($normalizedUsage));
+                }
+
+                continue;
+            }
+
+            // Tool start
+            if ($type === 'content_block_start') {
+                $block = $chunk->content_block_start ?? $chunk->content_block ?? null;
+                if (($block->type ?? '') === 'tool_use') {
+                    $id = $block->id ?? 'tool_call_'.uniqid();
+                    $pendingToolNames[$id] = $block->name ?? '';
+                    $pendingToolInputs[$id] = '';
+                    $currentToolBlockIds[$chunk->index] = $id;
+                }
+
+                continue;
+            }
+
+            // Text or tool input delta
+            if ($type === 'content_block_delta') {
+                $delta = $chunk->delta ?? null;
+                $deltaType = $delta->type ?? '';
+
+                if ($deltaType === 'text_delta') {
+                    $text = $delta->text ?? '';
+                    if ($text !== '') {
+                        $streamedMessage->appendContent($text);
+
+                        if ($callback) {
+                            $callback($streamedMessage);
+                        }
+                        yield $streamedMessage;
+                    }
+                } elseif ($deltaType === 'input_json_delta') {
+                    $id = $chunk->content_block->id ?? ($currentToolBlockIds[$chunk->index] ?? null);
+
+                    if ($id !== null) {
+                        // Append partial_json
+                        $pendingToolInputs[$id] = ($pendingToolInputs[$id] ?? '').($delta->partial_json ?? '');
+                    }
+                } else {
+                    // No recognized delta type, reset last chunk
+                    $streamedMessage->resetLastChunk();
+                }
+
+                continue;
+            }
+
+            // Tool stop and finalize
+            if ($type === 'content_block_stop') {
+                $block = $chunk->content_block_stop ?? $chunk->content_block ?? null;
+                if (($block->type ?? '') === 'tool_use') {
+                    $id = $block->id ?? ($currentToolBlockIds[$chunk->index] ?? null);
+                    if ($id !== null) {
+                        $name = $pendingToolNames[$id] ?? '';
+                        $args = $pendingToolInputs[$id] ?: '{}';
+
+                        $toolCalls[] = new ToolCall($id, $name, $args);
+
+                        // unset pending maps
+                        unset($pendingToolNames[$id], $pendingToolInputs[$id]);
+
+                        // clear the index map for this block
+                        if (isset($chunk->index)) {
+                            unset($currentToolBlockIds[$chunk->index]);
+                        }
+                    }
+                }
+
+                continue;
+            }
+
+            // End of message deltas
+            if ($type === 'message_delta') {
+                $stopReason = $chunk->delta->stop_reason ?? null;
+
+                if (isset($chunk->usage)) {
+                    $messageDeltaUsage = $chunk->usage?->toArray();
+                    if ($messageDeltaUsage) {
+                        $usageTimeline[] = ['event' => 'message_delta', 'usage' => $messageDeltaUsage];
+                    }
+                }
+
+                if ($stopReason === 'tool_use') {
+                    // Tool finalize
+                    if (! empty($pendingToolInputs)) {
+                        foreach ($pendingToolInputs as $id => $args) {
+                            $name = $pendingToolNames[$id] ?? '';
+                            $args = $args ?: '{}';
+                            $toolCalls[] = new ToolCall($id, $name, $args);
+                        }
+                        $pendingToolInputs = [];
+                        $pendingToolNames = [];
+                    }
+
+                    $finalUsage = $chunk->usage?->toArray() ?? $finalUsage;
+                    $merged = $this->mergeUsageSnapshots($firstUsage, $finalUsage);
+
+                    $toolCallMessage = new ToolCallMessage($toolCalls);
+                    $toolCallMessage->setUsage(Usage::fromArray($merged));
+
+                    if ($callback) {
+                        $callback($toolCallMessage);
+                    }
+                    yield $toolCallMessage;
+
+                    return;
+                }
+
+                if ($stopReason === 'end_turn') {
+                    $finalUsage = $chunk->usage?->toArray() ?? $finalUsage;
+                    // set the final usage on the streamed text message
+                    $merged = $this->mergeUsageSnapshots($firstUsage, $finalUsage);
+                    $streamedMessage->setUsage(Usage::fromArray($merged));
+                    break;
+                }
+
+                if ($stopReason === 'refusal') {
+                    $content = $streamedMessage->getContentAsString();
+
+                    throw new \Exception('Claude refused the request: '.($content ?: 'No reason provided.'));
+                }
+            }
+
+            if ($type === 'message_stop') {
+                break;
+            }
+        }
+
+        // Finalize the stream: attach merged usage, trigger callback,
+        // mark the message as complete, and yield the final message.
+        $merged = $this->mergeUsageSnapshots($firstUsage, $finalUsage);
+        $streamedMessage->setUsage(Usage::fromArray($merged));
+
+        if ($callback) {
+            $callback($streamedMessage);
+        }
+
+        $streamedMessage->setComplete(true);
+
+        yield $streamedMessage;
+
+    }
+
+    protected function preparePayload(array $messages, DriverConfig|array $overrideSettings = []): array
+    {
+        // Merge driver config with override settings
+        $overrideConfig = DriverConfig::wrap($overrideSettings);
+        $config = $this->getDriverConfig()->merge($overrideConfig);
+
+        // Use formatter to extract system instruction
+        $systemPrompt = $this->formatter->extractSystemInstruction($messages);
+
+        // Use formatter to convert Message objects to Claude format
+        $chatMessages = $this->formatter->formatMessages($messages);
+
+        // Build payload with known properties
+        $payload = [
+            'model' => $config->model ?? 'claude-3-7-sonnet-latest',
+            'messages' => $chatMessages,
+            'max_tokens' => $config->maxCompletionTokens ?? 1024,
+        ];
+
+        if ($systemPrompt) {
+            $payload['system'] = $systemPrompt;
+        }
+
+        // Add optional known properties
+        if ($config->has('temperature')) {
+            $payload['temperature'] = $config->temperature;
+        }
+        if ($config->has('topP')) {
+            $payload['top_p'] = $config->topP;
+        }
+
+        // Add any extra/custom settings (Claude-specific options)
+        foreach ($config->getExtras() as $key => $value) {
+            $payload[$key] = $value;
+        }
+
+        if (! empty($this->tools)) {
+            $payload['tools'] = $this->formatter->formatTools(array_values($this->tools));
+        }
+
+        // Add structured output configuration if response schema is set
+        if ($this->structuredOutputEnabled()) {
+            $unwrappedSchema = $this->unwrapResponseSchema($this->getResponseSchema());
+            if (empty($unwrappedSchema) || ! is_array($unwrappedSchema)) {
+                throw new \InvalidArgumentException('Response schema is invalid or empty after unwrapping. Ensure the schema is a valid JSON schema object.');
+            }
+
+            $payload['output_config'] = [
+                'format' => [
+                    'type' => 'json_schema',
+                    'schema' => $unwrappedSchema,
+                ],
+            ];
+        }
+
+        return $payload;
+    }
+
+    public function formatToolForPayload(ToolInterface $tool): array
+    {
+        return [
+            'name' => $tool->getName(),
+            'description' => $tool->getDescription(),
+            'input_schema' => [
+                'type' => 'object',
+                'properties' => $tool->getProperties(),
+                'required' => $tool->getRequired(),
+            ],
+        ];
+    }
+
+    /**
+     * @deprecated Use ClaudeMessageFormatter::formatToolCallMessage() instead.
+     *             This method is maintained for backwards compatibility.
+     */
+    public function toolCallsToMessage(array $toolCalls): array
+    {
+        $content = [];
+
+        foreach ($toolCalls as $toolCall) {
+            $input = json_decode($toolCall->getArguments(), true);
+
+            $content[] = [
+                'type' => 'tool_use',
+                'id' => $toolCall->getId(),
+                'name' => $toolCall->getToolName(),
+                // Cast empty arrays to object so json_encode produces "{}"
+                // instead of "[]". The Claude API requires input to be a dict.
+                'input' => empty($input) ? (object) $input : $input,
+            ];
+        }
+
+        return [
+            'role' => 'assistant',
+            'content' => $content,
+        ];
+    }
+
+    /**
+     * @deprecated Use ClaudeMessageFormatter::formatToolResultMessage() instead.
+     *             This method is maintained for backwards compatibility.
+     */
+    public function toolResultToMessage(ToolCallInterface $toolCall, mixed $result): array
+    {
+        return [
+            'role' => 'user',
+            'content' => [
+                [
+                    'type' => 'tool_result',
+                    'tool_use_id' => $toolCall->getId(),
+                    'content' => is_string($result) ? $result : json_encode($result),
+                ],
+            ],
+        ];
+    }
+
+    public function formatImagesForPayload(?array $images = null): array
+    {
+        $formattedImages = [];
+
+        foreach ($images as $url) {
+            $formattedImages[] = [
+                'type' => 'image',
+                'source' => [
+                    'type' => 'url',
+                    'url' => $url,
+                ],
+            ];
+        }
+
+        return $formattedImages;
+    }
+
+    /**
+     * Unwrap a response schema if it's wrapped in OpenAI format.
+     * Claude expects the raw schema object, not wrapped with 'name' and 'strict'.
+     * Also ensures 'additionalProperties: false' is set on all object types as required by Claude.
+     *
+     * @param  array  $schema  The schema (either raw or OpenAI-wrapped)
+     * @return array The unwrapped schema
+     */
+    protected function unwrapResponseSchema(array $schema): array
+    {
+        // If wrapped in OpenAI format (has 'schema' key), extract the inner schema
+        if (isset($schema['schema']) && is_array($schema['schema'])) {
+            $schema = $schema['schema'];
+        }
+
+        // Ensure additionalProperties is set on all object types (Claude requirement)
+        return $this->ensureAdditionalPropertiesFalse($schema);
+    }
+
+    /**
+     * Recursively ensure 'additionalProperties: false' is set on all object types.
+     * Claude's API requires this for structured output schemas.
+     *
+     * @param  array  $schema  The schema to process
+     * @return array The schema with additionalProperties set
+     */
+    protected function ensureAdditionalPropertiesFalse(array $schema): array
+    {
+        // If this is an object type, ensure additionalProperties is false
+        if (isset($schema['type']) && $schema['type'] === 'object') {
+            if (! array_key_exists('additionalProperties', $schema)) {
+                $schema['additionalProperties'] = false;
+            }
+        }
+
+        // Recursively process nested properties
+        if (isset($schema['properties']) && is_array($schema['properties'])) {
+            foreach ($schema['properties'] as $key => $property) {
+                if (is_array($property)) {
+                    $schema['properties'][$key] = $this->ensureAdditionalPropertiesFalse($property);
+                }
+            }
+        }
+
+        // Handle array items
+        if (isset($schema['items']) && is_array($schema['items'])) {
+            $schema['items'] = $this->ensureAdditionalPropertiesFalse($schema['items']);
+        }
+
+        // Handle anyOf, oneOf, allOf
+        foreach (['anyOf', 'oneOf', 'allOf'] as $keyword) {
+            if (isset($schema[$keyword]) && is_array($schema[$keyword])) {
+                foreach ($schema[$keyword] as $i => $subSchema) {
+                    if (is_array($subSchema)) {
+                        $schema[$keyword][$i] = $this->ensureAdditionalPropertiesFalse($subSchema);
+                    }
+                }
+            }
+        }
+
+        // Handle $defs and definitions (JSON Schema reference definitions)
+        foreach (['$defs', 'definitions'] as $defsKeyword) {
+            if (isset($schema[$defsKeyword]) && is_array($schema[$defsKeyword])) {
+                foreach ($schema[$defsKeyword] as $defName => $defSchema) {
+                    if (is_array($defSchema)) {
+                        $schema[$defsKeyword][$defName] = $this->ensureAdditionalPropertiesFalse($defSchema);
+                    }
+                }
+            }
+        }
+
+        return $schema;
+    }
+
+    private function mergeUsageSnapshots(?array $first, ?array $final): array
+    {
+        $first = $first ?? [];
+        $final = $final ?? [];
+
+        // Input tokens: the first snapshot already represents the full prompt
+        // (final often omits it or repeats same value). Prefer first.
+        $input = $first['input_tokens'] ?? $final['input_tokens'] ?? 0;
+
+        // Output tokens: final is the total at the end, not a delta.
+        // Prefer final, else fall back to first.
+        $output = $final['output_tokens'] ?? $first['output_tokens'] ?? 0;
+
+        // Sanity: if both exist and "first > final", pick the max to avoid weird regressions.
+        if (isset($first['output_tokens'], $final['output_tokens'])) {
+            $output = max($first['output_tokens'], $final['output_tokens']);
+        }
+
+        // Return normalized keys for Usage DataModel
+        return [
+            'prompt_tokens' => $input,
+            'completion_tokens' => $output,
+            'total_tokens' => $input + $output,
+        ];
+    }
+}

@@ -1,0 +1,44 @@
+# Laravel
+/vendor
+/node_modules
+/.env
+/.env.*.php
+/.cache/
+/storage/*.key
+/storage/debugbar/
+/storage/app/public
+/storage/logs/*
+!.gitkeep
+/.vscode
+/Posh HTML
+
+# IDEs
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Dependencies
+node_modules/
+yarn.lock
+package-lock.json
+composer.lock
+
+# Build artifacts
+dist/
+build/
+.turbo
+.next
+
+# Test coverage
+coverage/
+.nyc_output/
+
+# Temporary files
+*.tmp
+.env.local

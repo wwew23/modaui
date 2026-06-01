@@ -1,0 +1,6 @@
+{
+  "name": "Satori AI Commerce Studio",
+  "description": "An intelligent e-commerce administration and AI design workspace featuring a live-updating interactive AI page builder (AI Canvas), templates library, AI customer/marketing agent simulators, order catalogs, deep performance analytics, and store settings.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

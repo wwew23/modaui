@@ -1,0 +1,11 @@
+{
+  "id": "botble/ai-multi-industry",
+  "name": "AI Multi Industry",
+  "namespace": "Botble\\AiMultiIndustry\\",
+  "provider": "Botble\\AiMultiIndustry\\Providers\\AiMultiIndustryServiceProvider",
+  "author": "Modaui",
+  "url": "https://modaui.com",
+  "version": "1.0.0",
+  "description": "Production-grade multi-industry AI team plugin for Botble.",
+  "minimum_core_version": "7.3.0"
+}
