@@ -28,3 +28,12 @@ Homestead.json
 .env.production
 .phpactor.json
 auth.json
+
+# Large files
+*.zip
+*.rar
+*.7z
+modaooooo.zip
+Posh HTML.rar
+**/*.zip
+**/*.rar
